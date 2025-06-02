@@ -18,7 +18,7 @@ DataInsightKit is a powerful Python library for data analysis, AI, and statistic
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/DataInsightKit.git
+git clone https://github.com/Khushx11/DataInsightKit.git
 cd DataInsightKit
 
 # Install dependencies
