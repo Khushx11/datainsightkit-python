@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataInsightKit · CSV workbench</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><main>
+
+<p class="brand">DataInsightKit</p><h1>CSV workbench</h1>
+<p class="lede">Check what’s missing, repeated or unusual before you model your data. Analysis runs locally.</p>
+<div class="grid">
+<section class="panel"><h2>Load a dataset</h2>
+<form id="profile" class="stack"><label for="file">Open a CSV file</label><input id="file" type="file" accept=".csv,text/csv">
+<label for="csv">Or paste CSV</label><textarea id="csv" placeholder="channel,orders,revenue"></textarea>
+<div class="actions"><button class="primary">Profile data</button><button type="button" id="sample">Try retail sample</button></div>
+<small>Up to 1 MB, 10,000 rows and 40 columns.</small>
+<p class="status" id="status" role="status"></p></form></section>
+<section class="panel"><h2>Dataset summary</h2>
+<p class="muted" id="empty">Load a CSV to see its quality checks.</p>
+<div id="overview" hidden class="stack"><div class="summary" id="numbers"></div>
+<p class="muted" id="warnings"></p><div class="actions"><button id="download">Download JSON</button></div></div></section>
+<section id="details" class="panel full" hidden><h2>Column profiles</h2>
+<label for="filter">Filter by column name</label><input type="search" id="filter">
+<div class="scroll"><table><thead><tr><th>Column</th><th>Type</th><th>Missing</th><th>Distinct</th><th>Median / top value</th><th>Potential outliers</th></tr></thead><tbody id="columns"></tbody></table></div>
+</section>
+<section id="links" class="panel full" hidden><h2>Numeric associations</h2><p class="muted">Pearson correlation on available pairs, ranked by absolute strength.</p><div id="pairs"></div></section>
+</div></main></body></html>

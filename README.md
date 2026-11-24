@@ -2,6 +2,16 @@
 
 A local CSV profiler for the first pass over unfamiliar tabular data. It answers four questions before modelling. Which fields are incomplete? Are rows repeated? What do the numeric distributions look like? Which fields move together?
 
+## Browser interface
+
+After installing the package with `python -m pip install .`, start it with:
+
+```sh
+python -m datainsightkit.web
+```
+
+Open http://127.0.0.1:8000. Open or paste a CSV, review the quality summary, filter columns, and download the JSON profile. The interface also includes the synthetic retail example. The server listens only on your computer.
+
 ## Try it
 
 Requires Python 3.10 or later. Run from the repository root.

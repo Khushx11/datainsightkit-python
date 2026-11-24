@@ -13,3 +13,6 @@ datainsightkit = "datainsightkit.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["datainsightkit*"]
+
+[tool.setuptools.package-data]
+datainsightkit = ["web_assets/*"]
