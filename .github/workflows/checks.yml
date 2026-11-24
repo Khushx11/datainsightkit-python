@@ -7,10 +7,27 @@ jobs:
       matrix:
         python: ['3.10', '3.13']
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install .
       - run: python -m unittest discover -s tests -v
       - run: datainsightkit examples/weekly_orders.csv --output /tmp/profile.html
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install package
+        run: python -m pip install .
+      - name: Measure deterministic dataset profiling
+        run: python benchmarks/profile_throughput.py --rows 1000 5000 --repeats 3 --output benchmarks/latest-ci.json
+      - name: Attach reproducible benchmark record
+        uses: actions/upload-artifact@v4
+        with:
+          name: profiling-benchmark
+          path: benchmarks/latest-ci.json
