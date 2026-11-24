@@ -10,7 +10,7 @@ After installing the package with `python -m pip install .`, start it with:
 python -m datainsightkit.web
 ```
 
-Open http://127.0.0.1:8000. Open or paste a CSV, review the quality summary, filter columns, and download the JSON profile. The interface starts with the UCI Online Shoppers dataset. Select a column name to inspect its distribution or most frequent values. Upload or paste a different CSV to analyse your own data. The server listens only on your computer.
+Open http://127.0.0.1:8000. Open or paste a CSV, review the quality summary, filter columns, and download the JSON profile. The interface starts with the UCI Online Shoppers dataset. Select a column name to inspect its distribution or most frequent values. Upload or paste a different CSV to analyse your own data. In the column details, choose “Treat as categorical” for numeric codes such as browser IDs. Clear the checkbox to restore inference. JSON exports include the applied overrides. The server listens only on your computer.
 
 ## Try it
 
@@ -35,6 +35,6 @@ Khush Bhavin Maru · Adelaide University MAAIM portfolio. Codex assisted with im
 
 The browser demo profiles **12,330 observed shopping sessions** across 17 features and a purchase outcome. It reports **1,908 purchases (15.5%)**, including **24.9% of 1,694 new visitors** and **13.9% of 10,551 returning visitors**. These are descriptive rates. The **125 identical rows** are repeated observed feature-and-outcome vectors. They do not establish duplicate customers or sessions.
 
-The sample uses the publisher’s categorical schema, so numeric identifiers such as browser and traffic type are excluded from Pearson correlations. Uploaded CSVs use the documented type inference. The dashboard does not fit a purchase prediction model.
+The sample uses the publisher’s categorical schema, so numeric identifiers such as browser and traffic type are excluded from Pearson correlations. Uploaded CSVs use type inference unless you mark a column as categorical in the browser or pass `--categorical COLUMN` to the CLI. Repeat the flag for multiple columns. The dashboard does not fit a purchase prediction model.
 
 Source: Sakar, C. and Kastro, Y. (2018), *Online Shoppers Purchasing Intention Dataset*, UCI Machine Learning Repository, [DOI 10.24432/C5F88Q](https://doi.org/10.24432/C5F88Q), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled CSV preserves the upstream records and headers with normalised line endings. The profiler’s key results were independently checked against pandas.

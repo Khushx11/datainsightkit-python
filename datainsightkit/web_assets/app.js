@@ -1,11 +1,14 @@
 
 const $ = id => document.getElementById(id);
 let report;
+let activeDataset;
 let source = 'Pasted CSV';
 const percent = new Intl.NumberFormat(undefined, {style:'percent', maximumFractionDigits:1});
 let request = 0;
 const displayNumber = new Intl.NumberFormat(undefined, {maximumFractionDigits: 3});
 const format = value => typeof value === 'number' ? displayNumber.format(value) : value;
+const edgeFormat = new Intl.NumberFormat(undefined, {maximumSignificantDigits: 12});
+
 
 function inspectColumn(name, col) {
   const panel = $('column-detail');
@@ -19,13 +22,35 @@ function inspectColumn(name, col) {
     body.append(item);
   }
   panel.replaceChildren(title, entries.length ? body : node('p', 'No observed values.', 'muted'));
+  if (activeDataset) {
+    const control = node('label', '', 'override');
+    const toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.checked = report.categorical_overrides.includes(name);
+    control.append(toggle, node('span', 'Treat ' + name + ' as categorical'));
+    toggle.addEventListener('change', async () => {
+      const categorical = new Set(report.categorical_overrides);
+      if (toggle.checked) categorical.add(name);
+      else categorical.delete(name);
+      toggle.disabled = true;
+      if (!await profile({...activeDataset, categorical: [...categorical]}, name)) {
+        toggle.checked = !toggle.checked;
+        toggle.disabled = false;
+      }
+    });
+    panel.append(control);
+  }
   if (col.histogram) {
     const figure = node('div', '', 'histogram');
     figure.append(node('h3', 'Distribution'));
     const maximum = Math.max(...col.histogram.map(bin => bin.count));
-    for (const bin of col.histogram) {
-      figure.append(barRow(`${format(bin.lower)} – ${format(bin.upper)}`, bin.count, maximum, format(bin.count)));
-    }
+    col.histogram.forEach((bin, index) => {
+      const closing = index === col.histogram.length - 1 ? ']' : ')';
+      const row = barRow(`[${edgeFormat.format(bin.lower)}, ${edgeFormat.format(bin.upper)}${closing}`,
+        bin.count, maximum, format(bin.count));
+      row.title = `[${bin.lower}, ${bin.upper}${closing}`;
+      figure.append(row);
+    });
     panel.append(figure);
   }
   panel.hidden = false;
@@ -72,10 +97,11 @@ function barRow(name, value, max, reading) {
   row.append(node('span', name), bar, node('strong', reading));
   return row;
 }
-function render(value, sourceName) {
+function render(value, dataset, selectedColumn) {
   report = value;
-  $('source').textContent = value.source?.name ?? sourceName;
-  $('filter').value = '';
+  activeDataset = dataset;
+  $('source').textContent = value.source?.name ?? dataset.name;
+  if (!selectedColumn) $('filter').value = '';
   $('column-detail').hidden = true;
   $('numbers').replaceChildren(...[['Rows', value.rows], ['Columns', value.column_count],
     ['Identical row repeats', value.quality.duplicate_rows], ['Missing values', Object.values(value.columns).reduce((sum, col) => sum + col.missing, 0)]].map(([name, count]) => {
@@ -99,36 +125,51 @@ function render(value, sourceName) {
   }
   for (const id of ['overview', 'details', 'links', 'download', 'jump']) $(id).hidden = false;
   renderColumns();
+  if (selectedColumn) inspectColumn(selectedColumn, value.columns[selectedColumn]);
 }
-async function profile(sample = false) {
+async function profile(dataset = null, selectedColumn = null) {
   const current = ++request;
-  const sourceName = source;
   const status = $('status');
   status.textContent = 'Analysing…';
   status.classList.remove('error');
   try {
-    const response = sample ? await fetch('/api/sample') : await fetch('/api/profile', {method:'POST', body:$('csv').value});
+    const response = dataset ? await fetch('/api/profile', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({csv:dataset.csv, categorical:dataset.categorical})
+    }) : await fetch('/api/sample');
     const value = await response.json();
-    if (current !== request) return;
+    if (current !== request) return false;
     if (!response.ok) throw new Error(value.error);
-    render(value, sourceName);
-    status.textContent = 'Profile ready.';
+    render(value, dataset, selectedColumn);
+    status.textContent = selectedColumn ? 'Column types updated.' : 'Profile ready.';
+    return true;
   } catch (error) {
-    if (current !== request) return;
+    if (current !== request) return false;
     status.textContent = error.message;
     status.classList.add('error');
+    return false;
   }
 }
-$('profile').addEventListener('submit', event => { event.preventDefault(); profile(); });
+$('profile').addEventListener('submit', event => { event.preventDefault(); profile({csv:$('csv').value, name:source, categorical:[]}); });
 $('csv').addEventListener('input', () => { source = 'Pasted CSV'; $('file').value = ''; });
 $('filter').addEventListener('input', renderColumns);
-$('sample').addEventListener('click', () => profile(true));
+$('sample').addEventListener('click', () => profile());
 $('file').addEventListener('change', async () => {
   const file = $('file').files[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) { $('status').textContent = 'That file is larger than 2 MiB.'; return; }
-  try { $('csv').value = await file.text(); source = file.name; await profile(); }
-  catch (error) { $('status').textContent = error.message; }
+  const read = ++request;
+  try {
+    const csv = new TextDecoder('utf-8', {fatal:true}).decode(await file.arrayBuffer());
+    if (read !== request) return;
+    $('csv').value = csv;
+    source = file.name;
+    await profile({csv, name:source, categorical:[]});
+  } catch (error) {
+    if (read !== request) return;
+    $('status').textContent = 'Unable to read the file as UTF-8 CSV.';
+    $('status').classList.add('error');
+  }
 });
 $('download').addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], {type:'application/json'}));
@@ -137,4 +178,4 @@ $('download').addEventListener('click', () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
-profile(true);
+profile();

@@ -6,7 +6,11 @@ from .quality import quality
 from .values import missing, number
 
 def analyse(headers, rows, *, categorical=()):
-    columns = profile(headers, rows, categorical=categorical)
+    overrides = set(categorical)
+    unknown = overrides.difference(headers)
+    if unknown:
+        raise ValueError("Unknown categorical columns: " + ", ".join(sorted(unknown)))
+    columns = profile(headers, rows, categorical=overrides)
     numeric = [name for name in headers if columns[name]["kind"] == "numeric"]
     for name in numeric:
         values = [number(row[name]) for row in rows if not missing(row[name])]
@@ -16,5 +20,6 @@ def analyse(headers, rows, *, categorical=()):
     return {
         "rows": len(rows), "column_count": len(headers),
         "quality": quality(headers, rows, columns), "columns": columns,
+        "categorical_overrides": [name for name in headers if name in overrides],
         "associations": associations(numeric, rows),
     }

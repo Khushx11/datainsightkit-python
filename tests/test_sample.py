@@ -19,3 +19,25 @@ class BrowserDataTests(unittest.TestCase):
         result = profile_csv("Browser,Revenue\n1,TRUE\n2,FALSE\n")
         self.assertEqual(result["columns"]["Browser"]["kind"], "numeric")
         self.assertNotIn("case_study", result)
+
+    def test_histogram_counts_follow_the_reported_edges(self):
+        values = [0, 0.3, 0.4, 1]
+        bins = histogram(values)
+        for index, part in enumerate(bins):
+            expected = sum(
+                part["lower"] <= value < part["upper"]
+                or (index == len(bins) - 1 and value == part["upper"])
+                for value in values
+            )
+            self.assertEqual(part["count"], expected)
+
+    def test_uploaded_category_override_changes_analysis(self):
+        body = "Browser,Revenue\n1,12\n2,18\n3,25\n"
+        inferred = profile_csv(body)
+        self.assertEqual(len(inferred["associations"]), 1)
+        result = profile_csv(body, categorical=["Browser"])
+        self.assertEqual(result["categorical_overrides"], ["Browser"])
+        self.assertEqual(result["columns"]["Browser"]["kind"], "categorical")
+        self.assertEqual(result["associations"], [])
+        with self.assertRaisesRegex(ValueError, "Unknown categorical columns"):
+            profile_csv(body, categorical=["Unrecognised"])

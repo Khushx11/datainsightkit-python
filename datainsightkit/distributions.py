@@ -1,3 +1,4 @@
+from bisect import bisect_right
 from statistics import mean, median, quantiles
 
 def describe(values):
@@ -16,17 +17,17 @@ def histogram(values, bins=10):
     lo, hi = min(values), max(values)
     if lo == hi:
         return [{"lower": lo, "upper": hi, "count": len(values)}]
-    # Scale before subtracting so values close to float limits still have finite bins.
-    scale = max(abs(lo), abs(hi))
-    low, high = lo / scale, hi / scale
-    width = (high - low) / bins
-    if width == 0:
-        return [{"lower": lo, "upper": hi, "count": len(values)}]
-    counts = [0] * bins
+    width = hi - lo
+    if width == float("inf"):
+        edges = [lo * (1 - i / bins) + hi * (i / bins) for i in range(bins + 1)]
+    else:
+        edges = [lo + width * (i / bins) for i in range(bins + 1)]
+    edges[0], edges[-1] = lo, hi
+    edges = sorted(set(edges))
+    counts = [0] * (len(edges) - 1)
     for value in values:
-        index = max(0, min(bins - 1, int((value / scale - low) / width)))
+        index = min(len(counts) - 1, bisect_right(edges, value) - 1)
         counts[index] += 1
-    edges = [lo] + [(low + width * i) * scale for i in range(1, bins)] + [hi]
     return [
         {"lower": edges[i], "upper": edges[i + 1], "count": count}
         for i, count in enumerate(counts)

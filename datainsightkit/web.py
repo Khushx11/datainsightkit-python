@@ -41,16 +41,33 @@ def serve(port):
                 self.send_error(404)
                 return
             origin = self.headers.get("Origin")
-            if origin and origin not in {f"http://127.0.0.1:{port}", f"http://localhost:{port}"}:
+            if origin and origin not in {f"http://127.0.0.1:{self.server.server_port}", f"http://localhost:{self.server.server_port}"}:
                 self.send_error(403)
                 return
             try:
                 length = int(self.headers.get("Content-Length", "0"))
-                if not 0 < length <= MAX_BYTES:
+                structured = self.headers.get_content_type() == "application/json"
+                limit = MAX_BYTES * 6 + 65536 if structured else MAX_BYTES
+                if not 0 < length <= limit:
                     self.send_json(413, {"error": "Request exceeds the input limit or is empty."})
                     return
                 body = self.rfile.read(length).decode("utf-8-sig")
-                self.send_json(200, profile_csv(body))
+                if structured:
+                    payload = json.loads(body)
+                    if not isinstance(payload, dict):
+                        raise ValueError("Profile request must be an object.")
+                    body = payload.get("csv")
+                    categorical = payload.get("categorical", [])
+                    if not isinstance(body, str) or not isinstance(categorical, list) or any(
+                        not isinstance(name, str) for name in categorical
+                    ):
+                        raise ValueError("Supply CSV text and a list of categorical column names.")
+                    if len(body.encode("utf-8")) > MAX_BYTES:
+                        self.send_json(413, {"error": "CSV exceeds the 2 MiB limit."})
+                        return
+                else:
+                    categorical = ()
+                self.send_json(200, profile_csv(body, categorical=categorical))
             except (ValueError, OverflowError) as error:
                 self.send_json(400, {"error": str(error)})
 
@@ -76,9 +93,9 @@ SHOPPER_CATEGORIES = {
 SHOPPER_SOURCE = "https://doi.org/10.24432/C5F88Q"
 
 
-def profile_csv(body):
+def profile_csv(body, *, categorical=()):
     headers, rows = read_stream(StringIO(body, newline=""), max_rows=MAX_ROWS, max_columns=40)
-    return analyse(headers, rows)
+    return analyse(headers, rows, categorical=categorical)
 
 
 @lru_cache(maxsize=1)
