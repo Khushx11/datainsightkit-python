@@ -47,6 +47,17 @@ The reproducible benchmark uses a fixed-seed synthetic dataset with six numeric 
 python benchmarks/profile_throughput.py --rows 1000 5000 --repeats 3 --output benchmarks/local.json
 ```
 
+### Verified benchmark sample (GitHub Actions)
+
+Measured on the hosted Ubuntu runner with Python 3.13, using six numeric and two categorical synthetic fields, three repetitions per dataset size. The input records were generated before timing.
+
+| Rows | Median analysis time | Throughput | Peak traced allocations |
+|---:|---:|---:|---:|
+| 1,000 | 0.0823 s | 12,152 rows/s | 0.25 MiB |
+| 5,000 | 0.4481 s | 11,157 rows/s | 1.28 MiB |
+
+[View the passing benchmark run](https://github.com/Khushx11/datainsightkit-python/actions/runs/45381238560). Results depend on hardware, file structure and numeric-column count. `tracemalloc` does **not** include memory allocated before benchmarking (including the input rows) or the complete process RSS. These results are not production throughput guarantees.
+
 Every pull request also executes the benchmark in GitHub Actions and uploads a JSON benchmark artifact. Use the generated JSON alongside the runner type and Python version when comparing performance across revisions. Memory reflects Python-tracked allocations through `tracemalloc`, **not** full operating-system resident memory.
 
 ### Data-handling verification
