@@ -2,6 +2,7 @@
 const $ = id => document.getElementById(id);
 let report;
 let source = 'Pasted CSV';
+const percent = new Intl.NumberFormat(undefined, {style:'percent', maximumFractionDigits:1});
 let request = 0;
 const displayNumber = new Intl.NumberFormat(undefined, {maximumFractionDigits: 3});
 const format = value => typeof value === 'number' ? displayNumber.format(value) : value;
@@ -18,6 +19,15 @@ function inspectColumn(name, col) {
     body.append(item);
   }
   panel.replaceChildren(title, entries.length ? body : node('p', 'No observed values.', 'muted'));
+  if (col.histogram) {
+    const figure = node('div', '', 'histogram');
+    figure.append(node('h3', 'Distribution'));
+    const maximum = Math.max(...col.histogram.map(bin => bin.count));
+    for (const bin of col.histogram) {
+      figure.append(barRow(`${format(bin.lower)} – ${format(bin.upper)}`, bin.count, maximum, format(bin.count)));
+    }
+    panel.append(figure);
+  }
   panel.hidden = false;
   title.focus();
 }
@@ -53,15 +63,24 @@ function renderColumns() {
     return tr;
   }));
 }
-function render(value) {
+function barRow(name, value, max, reading) {
+  const row = node('div', '', 'segment');
+  const bar = document.createElement('progress');
+  bar.max = max;
+  bar.value = value;
+  bar.setAttribute('aria-label', name);
+  row.append(node('span', name), bar, node('strong', reading));
+  return row;
+}
+function render(value, sourceName) {
   report = value;
-  $('source').textContent = source;
+  $('source').textContent = value.source?.name ?? sourceName;
   $('filter').value = '';
   $('column-detail').hidden = true;
   $('numbers').replaceChildren(...[['Rows', value.rows], ['Columns', value.column_count],
-    ['Duplicates', value.quality.duplicate_rows]].map(([name, count]) => {
+    ['Identical row repeats', value.quality.duplicate_rows], ['Missing values', Object.values(value.columns).reduce((sum, col) => sum + col.missing, 0)]].map(([name, count]) => {
     const card = node('div', '', 'metric');
-    card.append(node('strong', count), node('small', name));
+    card.append(node('strong', format(count)), node('small', name));
     return card;
   }));
   const warnings = value.quality.columns_at_least_half_missing;
@@ -69,21 +88,30 @@ function render(value) {
   $('pairs').replaceChildren(...(value.associations.length ? value.associations.slice(0, 12).map(pair =>
     node('div', `${pair.left} × ${pair.right} · r = ${pair.pearson_r.toFixed(2)} · ${pair.pairs} pairs`, 'pair'))
     : [node('p', 'No eligible numeric pairs.', 'muted')]));
-  $('empty').hidden = true;
-  for (const id of ['overview', 'details', 'links', 'download']) $(id).hidden = false;
+  $('case-study').hidden = !value.case_study;
+  if (value.case_study) {
+    const detail = value.case_study;
+    $('attribution').href = value.source.url;
+    $('conversion').textContent = `${percent.format(detail.purchases / value.rows)} overall · ${format(detail.purchases)} purchases`;
+    const scale = 1;
+    $('segments').replaceChildren(...detail.segments.map(segment => barRow(segment.name, segment.rate, scale,
+      `${percent.format(segment.rate)} · n=${format(segment.sessions)}`)));
+  }
+  for (const id of ['overview', 'details', 'links', 'download', 'jump']) $(id).hidden = false;
   renderColumns();
 }
-async function profile() {
+async function profile(sample = false) {
   const current = ++request;
+  const sourceName = source;
   const status = $('status');
   status.textContent = 'Analysing…';
   status.classList.remove('error');
   try {
-    const response = await fetch('/api/profile', {method:'POST', body:$('csv').value});
+    const response = sample ? await fetch('/api/sample') : await fetch('/api/profile', {method:'POST', body:$('csv').value});
     const value = await response.json();
     if (current !== request) return;
     if (!response.ok) throw new Error(value.error);
-    render(value);
+    render(value, sourceName);
     status.textContent = 'Profile ready.';
   } catch (error) {
     if (current !== request) return;
@@ -94,20 +122,11 @@ async function profile() {
 $('profile').addEventListener('submit', event => { event.preventDefault(); profile(); });
 $('csv').addEventListener('input', () => { source = 'Pasted CSV'; $('file').value = ''; });
 $('filter').addEventListener('input', renderColumns);
-$('sample').addEventListener('click', async () => {
-  try {
-    const response = await fetch('/sample.csv');
-    if (!response.ok) throw new Error('Sample could not be loaded.');
-    $('csv').value = await response.text();
-    source = 'Palmer Penguins · Horst, Hill and Gorman · CC0';
-    $('file').value = '';
-    await profile();
-  } catch (error) { $('status').textContent = error.message; }
-});
+$('sample').addEventListener('click', () => profile(true));
 $('file').addEventListener('change', async () => {
   const file = $('file').files[0];
   if (!file) return;
-  if (file.size > 1024 * 1024) { $('status').textContent = 'That file is larger than 1 MB.'; return; }
+  if (file.size > 2 * 1024 * 1024) { $('status').textContent = 'That file is larger than 2 MiB.'; return; }
   try { $('csv').value = await file.text(); source = file.name; await profile(); }
   catch (error) { $('status').textContent = error.message; }
 });
@@ -117,3 +136,5 @@ $('download').addEventListener('click', () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
+
+profile(true);

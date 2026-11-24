@@ -1,11 +1,11 @@
 from collections import Counter
 from .values import missing, number
 
-def profile(headers, rows):
+def profile(headers, rows, *, categorical=()):
     columns = {}
     for name in headers:
         values = [row[name] for row in rows if not missing(row[name])]
-        numeric = bool(values) and all(number(v) is not None for v in values)
+        numeric = name not in categorical and bool(values) and all(number(v) is not None for v in values)
         columns[name] = {
             "kind": "numeric" if numeric else "categorical" if values else "empty",
             "missing": len(rows) - len(values),

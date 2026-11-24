@@ -1,27 +1,30 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DataInsightKit | Dataset profiling</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
-</head><body><header><div class="top"><div class="brand"><span class="mark" aria-hidden="true">DI</span>DataInsightKit</div><span>Local analysis</span></div></header>
-<main><div class="hero"><div><h1>Dataset profiling</h1><p class="lede">Inspect missing data, duplicates, distributions and numeric relationships before modelling.</p></div></div>
-
-<div class="grid">
-<section class="panel"><h2>Input dataset</h2>
+<title>DataInsightKit | Data Quality Workbench</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head><body><header class="masthead"><div class="mast-inner"><a href="/" class="identity"><span aria-hidden="true" class="icon">▥</span> DataInsightKit</a><span class="local"><i></i> Local processing</span></div></header>
+<main class="shell">
+<aside class="sidebar" aria-label="Dataset controls">
+<section class="side-card"><p class="eyebrow">WORKSPACE</p><h2>Dataset source</h2>
+<button type="button" id="sample" class="sample"><strong>Online Shoppers</strong><small>UCI Machine Learning Repository</small></button>
 <form id="profile" class="stack">
-<label for="file">CSV file</label><input id="file" type="file" accept=".csv,text/csv">
-<label for="csv">CSV contents</label><textarea id="csv" spellcheck="false" placeholder="Upload a CSV or paste its contents here"></textarea>
-<div class="actions"><button class="primary">Run profile</button><button type="button" id="sample">Load Palmer Penguins</button></div>
-<small>UTF-8 CSV · 1 MB · 10,000 rows · 40 columns</small>
-<p id="status" class="status" role="status"></p></form></section>
-<section class="panel">
-<div class="panel-heading"><h2>Quality overview</h2><button id="download" hidden>Export JSON</button></div>
-<p class="muted" id="empty">Run a profile to see data quality checks.</p>
-<div id="overview" hidden class="stack"><p class="muted" id="source"></p><div class="summary" id="numbers"></div><p class="muted" id="warnings"></p></div>
+<label for="file">Upload your own CSV</label><input id="file" type="file" accept=".csv,text/csv">
+<details class="paste"><summary>Paste CSV instead</summary><label for="csv" class="sr">CSV contents</label><textarea id="csv" spellcheck="false" required></textarea><button class="primary" type="submit">Profile pasted CSV</button></details>
+<p class="limit">2 MiB · 15,000 rows · 40 columns</p>
+<p id="status" role="status" class="status"></p>
+</form></section>
+<nav aria-label="Report sections" class="jump" id="jump" hidden><a href="#overview">Overview</a><a href="#details">Column profiles</a><a href="#links">Associations</a></nav>
+</aside>
+<div class="workspace">
+<div class="title"><div><p class="eyebrow">DATA QUALITY WORKBENCH</p><h1>Dataset profile</h1><p id="source" class="quiet">Select a dataset to begin.</p></div><button id="download" hidden>Export JSON</button></div>
+<section id="overview" hidden>
+<div class="kpis" id="numbers"></div>
+<section id="case-study" class="panel case" hidden><div class="section-head"><div><h2>Purchase conversion</h2><p id="conversion" class="quiet"></p></div><a id="attribution" class="source-link">Dataset source ↗</a></div>
+<div id="segments" class="segments"></div><p class="note">Observed purchase rate by visitor type. Rates are descriptive and depend on segment size.</p></section>
 </section>
-<section id="details" class="panel full" hidden>
-<div class="panel-heading"><h2>Column profiles</h2><div><label for="filter">Filter columns</label><input type="search" id="filter"></div></div>
-<div class="scroll"><table><thead><tr><th scope="col">Column</th><th scope="col">Inferred type</th><th scope="col">Missing</th><th scope="col">Distinct</th><th scope="col">Median / mode</th><th scope="col">Potential outliers</th></tr></thead><tbody id="columns"></tbody></table></div>
-<div id="column-detail" class="stack" hidden></div>
+<section id="details" class="panel" hidden>
+<div class="section-head"><div><h2>Column profiles</h2><p id="warnings" class="quiet"></p></div><label class="search"><span class="sr">Filter columns</span><input type="search" id="filter" placeholder="Filter columns"></label></div>
+<div class="scroll"><table><thead><tr><th scope="col">Column</th><th scope="col">Type</th><th scope="col">Missing</th><th scope="col">Distinct</th><th scope="col">Median / mode</th><th scope="col">Outliers</th></tr></thead><tbody id="columns"></tbody></table></div>
+<div id="column-detail" class="detail" hidden></div>
 </section>
-<section id="links" class="panel full" hidden><h2>Numeric associations</h2><p class="muted">Pearson correlations use complete pairs for each comparison.</p><div id="pairs"></div></section>
-</div>
-</main></body></html>
+<section id="links" class="panel" hidden><div class="section-head"><div><h2>Numeric associations</h2><p class="quiet">Pearson r on complete pairs, ranked by absolute correlation.</p></div></div><div id="pairs"></div></section>
+</div></main></body></html>
