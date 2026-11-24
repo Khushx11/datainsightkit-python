@@ -19,3 +19,18 @@ jobs:
         if: matrix.python == '3.13'
       - run: python tests/browser_smoke.py
         if: matrix.python == '3.13'
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: python -m pip install .
+      - name: Measure deterministic throughput and memory
+        run: python benchmarks/profile_throughput.py --rows 1000 5000 --repeats 3 --output benchmarks/latest-ci.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: profiling-benchmark
+          path: benchmarks/latest-ci.json

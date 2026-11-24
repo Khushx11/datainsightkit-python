@@ -38,3 +38,19 @@ The browser demo profiles **12,330 observed shopping sessions** across 17 featur
 The sample uses the publisher’s categorical schema, so numeric identifiers such as browser and traffic type are excluded from Pearson correlations. Uploaded CSVs use type inference unless you mark a column as categorical in the browser or pass `--categorical COLUMN` to the CLI. Repeat the flag for multiple columns. The dashboard does not fit a purchase prediction model.
 
 Source: Sakar, C. and Kastro, Y. (2018), *Online Shoppers Purchasing Intention Dataset*, UCI Machine Learning Repository, [DOI 10.24432/C5F88Q](https://doi.org/10.24432/C5F88Q), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled CSV preserves the upstream records and headers with normalised line endings. The profiler’s key results were independently checked against pandas.
+
+## Profiling benchmark
+
+The reproducible benchmark uses a fixed-seed synthetic dataset with six numeric and two categorical fields. It warms up the analyser, repeats each case three times, records median elapsed seconds, throughput in rows/second and Python traced peak allocations. These measurements are **machine- and workload-specific**, not a production service-level guarantee.
+
+```sh
+python benchmarks/profile_throughput.py --rows 1000 5000 --repeats 3 --output benchmarks/local.json
+```
+
+Every pull request also executes the benchmark in GitHub Actions and uploads a JSON benchmark artifact. Use the generated JSON alongside the runner type and Python version when comparing performance across revisions. Memory reflects Python-tracked allocations through `tracemalloc`, **not** full operating-system resident memory.
+
+### Data-handling verification
+
+Regression tests cover malformed CSV quoting, duplicate and blank headers, inconsistent row widths, quoted multiline values, Unicode, maximum browser row/column limits, numerical edge cases, fully missing columns, browser sample profiling and escaping untrusted field names in HTML exports.
+
+The browser remains local-only by design; it is **not** an authenticated or audited multi-user analytics service. CSV profiling is in-memory and pairwise correlations scale with the number of numeric columns, so large datasets should be processed with explicit resource limits or a distributed backend.
