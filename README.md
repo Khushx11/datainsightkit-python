@@ -1,58 +1,44 @@
 # DataInsightKit
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+**Status: experimental Python prototype, not yet a packaged release.**
 
-DataInsightKit is a powerful Python library for data analysis, AI, and statistical computing. It provides a comprehensive set of tools for data processing, visualization, and machine learning, making it easier to extract valuable insights from your data.
+DataInsightKit explores automated profiling, descriptive analysis, correlation analysis, text processing, and natural-language explanations for tabular datasets. It was developed as a modular Python codebase with pandas-based analysis routines.
 
-## Features
+## Implemented source modules
 
-- 📊 Advanced data processing and manipulation
-- 🤖 Machine learning model training and evaluation
-- 📈 Interactive data visualization
-- 🔍 Statistical analysis and hypothesis testing
-- 🚀 High-performance computing with parallel processing
-- 🔄 Automated data pipeline creation
+| Path | Purpose |
+| --- | --- |
+| `ingestion/profiler.py` | Column profiling and descriptive statistics |
+| `analysis/anomaly_detector.py` | Statistical anomaly-detection methods |
+| `analysis/correlation_analyzer.py` | Correlation analysis and structured results |
+| `analysis/text_analyzer.py` | Text processing, TF-IDF features and sentiment analysis |
+| `nlg/narrative_generator.py` | Experimental generation of natural-language findings |
+| `main.py` | A proposed DataInsightKit interface around a pandas DataFrame |
+| `config.py` | Environment-based application configuration |
 
-## Installation
+## Development status
 
-```bash
-# Clone the repository
-git clone https://github.com/Khushx11/DataInsightKit.git
-cd DataInsightKit
+The source currently needs a packaging and integration pass before it can be advertised as an installable library:
 
-# Install dependencies
-pip install -r requirements.txt
-```
+- Some imports expect a `datainsightkit` package layout that this repository does not yet have.
+- Several package initialisers refer to modules that are not present in this snapshot.
+- Dependencies are not yet declared in a reproducible project manifest.
+- Automated tests and a verified end-to-end example have not yet been added.
 
-## Quick Start
+The repository is therefore retained as a development snapshot, not a production-ready data analytics package. Installation examples and performance claims will be added only after a clean-environment test.
 
-```python
-import datainsightkit as dkit
+## Suggested verification priorities
 
-# Load your dataset
-data = dkit.load_dataset('your_data.csv')
+1. Consolidate the code under a proper Python package directory and resolve imports.
+2. Remove or implement missing export, formatting and model definitions.
+3. Declare and constrain dependencies (including pandas, NumPy, SciPy, scikit-learn, TextBlob, and OpenAI SDK components where used).
+4. Add fixtures and unit tests for empty, missing and mixed-type data.
+5. Establish a reproducible example from a publicly redistributable dataset.
 
-# Perform data analysis
-summary = dkit.describe_data(data)
-print(summary)
+## Security and privacy
 
-# Train a machine learning model
-model = dkit.train_model(data, target='target_column')
-```
+Use environment variables for credentials and do not commit `.env` files, private data, generated artifacts or API credentials. LLM-generated narratives should be treated as hypotheses to validate against the underlying dataset.
 
-## Documentation
+## Licence
 
-For detailed documentation and API reference, please visit [Documentation Link].
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on how to contribute to this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any questions or feedback, please open an issue or contact us at [your.email@example.com](mailto:your.email@example.com).
+See [LICENSE](LICENSE) for repository licensing details.
