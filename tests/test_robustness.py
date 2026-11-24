@@ -55,7 +55,7 @@ class RobustInputTests(unittest.TestCase):
         headers, rows = self.parse("a,b,empty\n3,7,NA\n3,7,null\n3,7,none\n")
         report = analyse(headers, rows)
         self.assertEqual(report["columns"]["a"]["distribution"]["min"], 3.0)
-        self.assertEqual(report["columns"]["a"]["potential_outliers"], 0)
+        self.assertIsNone(report["columns"]["a"]["potential_outliers"])
         self.assertEqual(report["columns"]["empty"]["kind"], "empty")
         self.assertEqual(report["columns"]["empty"]["missing"], 3)
         # JSON export must never emit NaN or Infinity values.
