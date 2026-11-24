@@ -1,6 +1,13 @@
 from itertools import combinations
+from math import frexp, ldexp
 from statistics import StatisticsError, correlation
 from .values import missing, number
+
+def scaled(values):
+    """Keep Pearson intermediates in range using an exact power-of-two scale."""
+    _, exponent = frexp(max(map(abs, values)))
+    return [ldexp(value, -exponent) for value in values]
+
 
 def associations(names, rows):
     results = []
@@ -10,7 +17,8 @@ def associations(names, rows):
         if len(pairs) < 3:
             continue
         try:
-            score = correlation(*zip(*pairs))
+            left_values, right_values = zip(*pairs)
+            score = correlation(scaled(left_values), scaled(right_values))
         except StatisticsError:
             continue
         results.append({"left": left, "right": right, "pearson_r": score, "pairs": len(pairs)})
