@@ -1,44 +1,22 @@
 # DataInsightKit
 
-**Status: experimental Python prototype, not yet a packaged release.**
+A local CSV profiler for the first pass over unfamiliar tabular data. It answers four questions before modelling. Which fields are incomplete? Are rows repeated? What do the numeric distributions look like? Which fields move together?
 
-DataInsightKit explores automated profiling, descriptive analysis, correlation analysis, text processing, and natural-language explanations for tabular datasets. It was developed as a modular Python codebase with pandas-based analysis routines.
+## Try it
 
-## Implemented source modules
+Requires Python 3.10 or later. Run from the repository root.
 
-| Path | Purpose |
-| --- | --- |
-| `ingestion/profiler.py` | Column profiling and descriptive statistics |
-| `analysis/anomaly_detector.py` | Statistical anomaly-detection methods |
-| `analysis/correlation_analyzer.py` | Correlation analysis and structured results |
-| `analysis/text_analyzer.py` | Text processing, TF-IDF features and sentiment analysis |
-| `nlg/narrative_generator.py` | Experimental generation of natural-language findings |
-| `main.py` | A proposed DataInsightKit interface around a pandas DataFrame |
-| `config.py` | Environment-based application configuration |
+```sh
+python -m pip install .
+datainsightkit examples/weekly_orders.csv --output reports/orders.html
+datainsightkit examples/weekly_orders.csv --output reports/orders.json
+python -m unittest discover -s tests -v
+```
 
-## Development status
+Open the HTML file in a browser. The bundled CSV is a small synthetic example of weekly retail orders with a duplicate, a missing refund count and a large order week. The tool runs locally without a network connection or API key.
 
-The source currently needs a packaging and integration pass before it can be advertised as an installable library:
+The report includes column types, missing counts, category frequencies, numeric quartiles, Tukey outlier counts and pairwise Pearson correlations with their usable sample sizes. A correlation can flag fields worth reviewing before fitting a model. It does not establish causation. A flagged outlier can be a real event and needs context before removal.
 
-- Some imports expect a `datainsightkit` package layout that this repository does not yet have.
-- Several package initialisers refer to modules that are not present in this snapshot.
-- Dependencies are not yet declared in a reproducible project manifest.
-- Automated tests and a verified end-to-end example have not yet been added.
+The profiler handles a single in-memory UTF-8 CSV with a header. It infers a numeric type only when every non-missing value parses as a finite number. Use caution with number-like IDs and with the missing markers `NA`, `N/A`, `null` and `none`, which some datasets use as categories. Reports can contain frequent source values, so review them before sharing.
 
-The repository is therefore retained as a development snapshot, not a production-ready data analytics package. Installation examples and performance claims will be added only after a clean-environment test.
-
-## Suggested verification priorities
-
-1. Consolidate the code under a proper Python package directory and resolve imports.
-2. Remove or implement missing export, formatting and model definitions.
-3. Declare and constrain dependencies (including pandas, NumPy, SciPy, scikit-learn, TextBlob, and OpenAI SDK components where used).
-4. Add fixtures and unit tests for empty, missing and mixed-type data.
-5. Establish a reproducible example from a publicly redistributable dataset.
-
-## Security and privacy
-
-Use environment variables for credentials and do not commit `.env` files, private data, generated artifacts or API credentials. LLM-generated narratives should be treated as hypotheses to validate against the underlying dataset.
-
-## Licence
-
-See [LICENSE](LICENSE) for repository licensing details.
+Khush Bhavin Maru · Adelaide University MAAIM portfolio. Codex assisted with implementation and documentation.
