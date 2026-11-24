@@ -1,25 +1,27 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DataInsightKit · CSV workbench</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
-<body><main>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DataInsightKit | Dataset profiling</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head><body><header><div class="top"><div class="brand"><span class="mark" aria-hidden="true">DI</span>DataInsightKit</div><span>Local analysis</span></div></header>
+<main><div class="hero"><div><h1>Dataset profiling</h1><p class="lede">Inspect missing data, duplicates, distributions and numeric relationships before modelling.</p></div></div>
 
-<p class="brand">DataInsightKit</p><h1>CSV workbench</h1>
-<p class="lede">Check what’s missing, repeated or unusual before you model your data. Analysis runs locally.</p>
 <div class="grid">
-<section class="panel"><h2>Load a dataset</h2>
-<form id="profile" class="stack"><label for="file">Open a CSV file</label><input id="file" type="file" accept=".csv,text/csv">
-<label for="csv">Or paste CSV</label><textarea id="csv" placeholder="channel,orders,revenue"></textarea>
-<div class="actions"><button class="primary">Profile data</button><button type="button" id="sample">Try retail sample</button></div>
-<small>Up to 1 MB, 10,000 rows and 40 columns.</small>
-<p class="status" id="status" role="status"></p></form></section>
-<section class="panel"><h2>Dataset summary</h2>
-<p class="muted" id="empty">Load a CSV to see its quality checks.</p>
-<div id="overview" hidden class="stack"><div class="summary" id="numbers"></div>
-<p class="muted" id="warnings"></p><div class="actions"><button id="download">Download JSON</button></div></div></section>
-<section id="details" class="panel full" hidden><h2>Column profiles</h2>
-<label for="filter">Filter by column name</label><input type="search" id="filter">
-<div class="scroll"><table><thead><tr><th>Column</th><th>Type</th><th>Missing</th><th>Distinct</th><th>Median / top value</th><th>Potential outliers</th></tr></thead><tbody id="columns"></tbody></table></div>
+<section class="panel"><h2>Input dataset</h2>
+<form id="profile" class="stack">
+<label for="file">CSV file</label><input id="file" type="file" accept=".csv,text/csv">
+<label for="csv">CSV contents</label><textarea id="csv" spellcheck="false" placeholder="Upload a CSV or paste its contents here"></textarea>
+<div class="actions"><button class="primary">Run profile</button><button type="button" id="sample">Load Palmer Penguins</button></div>
+<small>UTF-8 CSV · 1 MB · 10,000 rows · 40 columns</small>
+<p id="status" class="status" role="status"></p></form></section>
+<section class="panel">
+<div class="panel-heading"><h2>Quality overview</h2><button id="download" hidden>Export JSON</button></div>
+<p class="muted" id="empty">Run a profile to see data quality checks.</p>
+<div id="overview" hidden class="stack"><p class="muted" id="source"></p><div class="summary" id="numbers"></div><p class="muted" id="warnings"></p></div>
 </section>
-<section id="links" class="panel full" hidden><h2>Numeric associations</h2><p class="muted">Pearson correlation on available pairs, ranked by absolute strength.</p><div id="pairs"></div></section>
-</div></main></body></html>
+<section id="details" class="panel full" hidden>
+<div class="panel-heading"><h2>Column profiles</h2><div><label for="filter">Filter columns</label><input type="search" id="filter"></div></div>
+<div class="scroll"><table><thead><tr><th scope="col">Column</th><th scope="col">Inferred type</th><th scope="col">Missing</th><th scope="col">Distinct</th><th scope="col">Median / mode</th><th scope="col">Potential outliers</th></tr></thead><tbody id="columns"></tbody></table></div>
+<div id="column-detail" class="stack" hidden></div>
+</section>
+<section id="links" class="panel full" hidden><h2>Numeric associations</h2><p class="muted">Pearson correlations use complete pairs for each comparison.</p><div id="pairs"></div></section>
+</div>
+</main></body></html>

@@ -10,7 +10,7 @@ After installing the package with `python -m pip install .`, start it with:
 python -m datainsightkit.web
 ```
 
-Open http://127.0.0.1:8000. Open or paste a CSV, review the quality summary, filter columns, and download the JSON profile. The interface also includes the synthetic retail example. The server listens only on your computer.
+Open http://127.0.0.1:8000. Open or paste a CSV, review the quality summary, filter columns, and download the JSON profile. The interface includes the real Palmer Penguins dataset as a worked example. Select a column name to inspect its distribution or most frequent values. The server listens only on your computer.
 
 ## Try it
 
@@ -30,3 +30,7 @@ The report includes column types, missing counts, category frequencies, numeric 
 The profiler handles a single in-memory UTF-8 CSV with a header. It infers a numeric type only when every non-missing value parses as a finite number. Use caution with number-like IDs and with the missing markers `NA`, `N/A`, `null` and `none`, which some datasets use as categories. Reports can contain frequent source values, so review them before sharing.
 
 Khush Bhavin Maru · Adelaide University MAAIM portfolio. Codex assisted with implementation and documentation.
+
+## Browser example data
+
+Palmer Penguins contains 344 observations and eight columns. Allison Horst, Alison Hill and Kristen Gorman packaged the data collected by Kristen Gorman and Palmer Station LTER. The included CSV is the unmodified [CC0 source file](https://github.com/allisonhorst/palmerpenguins/blob/8957207b78d6ccd1b4654a9dd9c9041b657478ab/inst/extdata/penguins.csv). The profiler was checked against pandas for missing counts, duplicates, quartiles and complete-pair correlations on this exact file.
