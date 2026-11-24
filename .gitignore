@@ -1,23 +1,10 @@
-# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.coverage
-htmlcov/
+.venv/
+*.egg-info/
 build/
 dist/
-*.egg-info/
-.venv/
-venv/
-# Local configuration and data
+reports/
 .env
 .env.*
-!.env.example
-data/private/
-*.log
-# OS / IDE
 .DS_Store
-Thumbs.db
-.vscode/
-.idea/
-.ipynb_checkpoints/
