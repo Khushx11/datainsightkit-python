@@ -1,4 +1,4 @@
-"""Run with Python after installing Playwright and Chromium."""
+"""Run with Python after installing Playwright and Google Chrome."""
 
 import json
 import subprocess
@@ -16,7 +16,7 @@ with TemporaryDirectory() as root, subprocess.Popen(
         address = server.stdout.readline().strip().removeprefix("Open ")
         assert address.startswith("http://127.0.0.1:"), address
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch()
+            browser = playwright.chromium.launch(channel="chrome")
             page = browser.new_page()
             errors = []
             page.on("pageerror", lambda error: errors.append(str(error)))
