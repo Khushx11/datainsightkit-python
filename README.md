@@ -47,7 +47,9 @@ The reproducible benchmark uses a fixed-seed synthetic dataset with six numeric 
 python benchmarks/profile_throughput.py --rows 1000 5000 --repeats 3 --output benchmarks/local.json
 ```
 
-### Verified benchmark sample (GitHub Actions)
+The same command also emits `csv_to_json_cases` for the CLI path. It reads a generated CSV from disk, profiles it, then serialises and writes a JSON report. The benchmark calls the CLI entry point inside the Python process, so results exclude interpreter startup and fixture creation. Each run verifies the JSON dimensions. Timing uses three repetitions with allocation tracing disabled, and a separate traced run measures peak Python allocations. The analysis-only `cases` series below uses tracing during timing and remains available for comparison with earlier runs.
+
+### Verified analysis-only benchmark sample (GitHub Actions)
 
 Measured on the hosted Ubuntu runner with Python 3.13, using six numeric and two categorical synthetic fields, three repetitions per dataset size. The input records were generated before timing.
 
