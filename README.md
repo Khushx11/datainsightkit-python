@@ -2,6 +2,10 @@
 
 A local CSV profiler for the first pass over unfamiliar tabular data. It answers four questions before modelling. Which fields are incomplete? Are rows repeated? What do the numeric distributions look like? Which fields move together?
 
+## My contribution
+
+I maintain DataInsightKit as a Python portfolio project. The repository covers CSV ingest, profiling, report export and a browser interface. The checked-in benchmark scripts document the workloads used to measure CLI and profiling performance.
+
 ## Browser interface
 
 After installing the package with `python -m pip install .`, start it with:
