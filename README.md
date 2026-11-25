@@ -3,20 +3,15 @@
 A local CSV profiler for the first pass over unfamiliar tabular data. It answers four questions before modelling. Which fields are incomplete? Are rows repeated? What do the numeric distributions look like? Which fields move together?
 
 
-## Profiling workflow
+## What to look for in a CSV profile
 
-```mermaid
-flowchart LR
-    A["Local CSV"]
-    B["Validate and parse"]
-    C["Profile and flag"]
-    D["Dashboard and export"]
-    A --> B --> C --> D
-```
+| When you open the dashboard | Inspect | What it tells you |
+| --- | --- | --- |
+| Before modelling | Missing values and repeated rows | Which parts of the input need inspection or cleaning |
+| When numeric fields look unusual | Distributions and summaries | Where values concentrate and whether extremes dominate |
+| When two columns move together | Pearson correlations | How strongly the measured numeric relationship is linear |
 
-![Median analysis time · sample benchmark](docs/readme-benchmark.svg)
-
-Source is the profiling benchmark later in this README. Results describe the measured workload.
+The [profiling benchmark](#profiling-benchmark) reports analysis time, throughput and memory together for two input sizes.
 
 ## My contribution
 
