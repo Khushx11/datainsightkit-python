@@ -2,6 +2,22 @@
 
 A local CSV profiler for the first pass over unfamiliar tabular data. It answers four questions before modelling. Which fields are incomplete? Are rows repeated? What do the numeric distributions look like? Which fields move together?
 
+
+## Profiling workflow
+
+```mermaid
+flowchart LR
+    A["Local CSV"]
+    B["Validate and parse"]
+    C["Profile and flag"]
+    D["Dashboard and export"]
+    A --> B --> C --> D
+```
+
+![Median analysis time · sample benchmark](docs/readme-benchmark.svg)
+
+Source is the profiling benchmark later in this README. Results describe the measured workload.
+
 ## My contribution
 
 I maintain DataInsightKit as a Python portfolio project. The repository covers CSV ingest, profiling, report export and a browser interface. The checked-in benchmark scripts document the workloads used to measure CLI and profiling performance.
