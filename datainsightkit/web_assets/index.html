@@ -4,18 +4,18 @@
 </head><body><header class="masthead"><div class="mast-inner"><a href="/" class="identity"><span aria-hidden="true" class="icon">▥</span> DataInsightKit</a><span class="local"><i></i> Local processing</span></div></header>
 <main class="shell">
 <aside class="sidebar" aria-label="Dataset controls">
-<section class="side-card"><p class="eyebrow">WORKSPACE</p><h2>Dataset source</h2>
+<section class="side-card"><h2>Open a dataset</h2>
 <button type="button" id="sample" class="sample"><strong>Online Shoppers</strong><small>UCI Machine Learning Repository</small></button>
 <form id="profile" class="stack">
 <label for="file">Upload your own CSV</label><input id="file" type="file" accept=".csv,text/csv">
-<details class="paste"><summary>Paste CSV instead</summary><label for="csv" class="sr">CSV contents</label><textarea id="csv" spellcheck="false" required></textarea><button class="primary" type="submit">Profile pasted CSV</button></details>
+<details class="paste"><summary>Paste CSV instead</summary><label for="csv" class="sr">CSV contents</label><textarea id="csv" placeholder="amount,category&#10;12,books" spellcheck="false" required></textarea><button class="primary" type="submit">Profile pasted CSV</button></details>
 <p class="limit">2 MiB · 15,000 rows · 40 columns</p>
 <p id="status" role="status" class="status"></p>
 </form></section>
 <nav aria-label="Report sections" class="jump" id="jump" hidden><a href="#overview">Overview</a><a href="#details">Column profiles</a><a href="#links">Associations</a></nav>
 </aside>
 <div class="workspace">
-<div class="title"><div><p class="eyebrow">DATA QUALITY WORKBENCH</p><h1>Dataset profile</h1><p id="source" class="quiet">Select a dataset to begin.</p></div><button id="download" hidden>Export JSON</button></div>
+<div class="title"><div><h1>Dataset profile</h1><p id="source" class="quiet">Select a dataset to begin.</p></div><button id="download" hidden>Export JSON</button></div>
 <section id="overview" hidden>
 <div class="kpis" id="numbers"></div>
 <section id="case-study" class="panel case" hidden><div class="section-head"><div><h2>Purchase conversion</h2><p id="conversion" class="quiet"></p></div><a id="attribution" class="source-link">Dataset source ↗</a></div>
