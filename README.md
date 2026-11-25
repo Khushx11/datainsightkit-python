@@ -19,6 +19,12 @@ I maintain DataInsightKit as a Python portfolio project. The repository covers C
 
 ## Browser interface
 
+Load the bundled Online Shoppers sample, filter the column profiles, and export the profile as JSON.
+
+[Watch the 13-second captioned walkthrough](https://raw.githubusercontent.com/Khushx11/datainsightkit-python/main/docs/demo/walkthrough.mp4)
+
+[![DataInsightKit comparing purchase conversion for the Online Shoppers sample](docs/demo/preview.png)](https://raw.githubusercontent.com/Khushx11/datainsightkit-python/main/docs/demo/walkthrough.mp4)
+
 After installing the package with `python -m pip install .`, start it with:
 
 ```sh
